@@ -10,6 +10,10 @@ const clientesRouter = require('./routes/clientes');
 
 const app = express();
 
+const dotenv = require('dotenv');
+dotenv.config();
+console.log(process.env.MYSQL_DB);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
