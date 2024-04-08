@@ -30,7 +30,7 @@ const findOne = async (request, response) => {
 const save = async (request, response) => {
     const result = await clienteService.save(request.body);
     return result ?
-    response.status(200).json() :
+    response.status(200).json({ message: 'Cliente adicionado com sucesso' }) :
     response.status(400).json({ "[ERROR/SERVER]" : "Falha ao salvar cliente" });
 };
 //update()

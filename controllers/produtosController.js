@@ -15,7 +15,7 @@ const findOne = async (request, response) => {
         
         // Se o produtos não foi encontrado, retornar um erro 404
         if (!produtos) {
-            return response.status(404).json({ error: 'produtos não encontrado' });
+            return response.status(404).json({ error: 'produto não encontrado' });
         }
         
         // Se o produtos foi encontrado, retornar o produtos
@@ -30,8 +30,8 @@ const findOne = async (request, response) => {
 const save = async (request, response) => {
     const result = await produtosService.save(request.body);
     return result ?
-    response.status(200).json() :
-    response.status(400).json({ "[ERROR/SERVER]" : "Falha ao salvar produtos" });
+    response.status(200).json({ message: 'Produto atualizado com sucesso' }) :
+    response.status(400).json({ "[ERROR/SERVER]" : "Falha ao salvar produto" });
 };
 //update()
 const update = async (request, response) => {
@@ -45,9 +45,9 @@ const update = async (request, response) => {
 
         // Verificar se a atualização foi bem-sucedida
         if (result) {
-            return response.status(200).json({ message: 'produtos atualizado com sucesso' });
+            return response.status(200).json({ message: 'Produto atualizado com sucesso' });
         } else {
-            return response.status(400).json({ error: 'Falha ao atualizar produtos' });
+            return response.status(400).json({ error: 'Falha ao atualizar produto' });
         }
     } catch (error) {
         console.error('Erro ao atualizar produtos:', error);
@@ -59,8 +59,8 @@ const remove = async (request, response) => {
     const { id } = request.params;
     const result = await produtosService.remove(id);
     return result ?
-    response.status(200).json({ message: 'produtos deletado'}) :
-    response.status(400).json({ "[ERROR/SERVER]": "Falha ao remover produtos" });
+    response.status(200).json({ message: 'Produto deletado'}) :
+    response.status(400).json({ "[ERROR/SERVER]": "Falha ao remover produto" });
 };
 module.exports = {
     findAll,
