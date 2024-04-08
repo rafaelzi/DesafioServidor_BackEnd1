@@ -1,13 +1,10 @@
-const express = require('express');
-const clientesRouter = require('./clientes');
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   // Defina a variável title
-  res.render('index', { title: 'Página Inicial' });
-});
+  res.render('index', { title: 'Página Inicial' })
+})
 
-
-
-module.exports = router;
+module.exports = router
