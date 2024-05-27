@@ -1,5 +1,8 @@
 const express = require('express');
+var jwt = require('jsonwebtoken');
 const router = express.Router();
+
+const secret = '1234'; 
 
 router.post('/', function(req, res, next) {
     // Aqui estamos simplificando o acesso ao banco de dados
