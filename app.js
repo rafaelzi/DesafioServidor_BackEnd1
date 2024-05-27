@@ -5,9 +5,17 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
+var produtosRouter = require('./routes/produtos');
+var clientesRouter = require('./routes/clientes');
 var usersRouter = require('./routes/users');
+var loginRouter = require('./routes/login');
+var logoutRouter = require('./routes/logout');
 
 var app = express();
+
+var dotenv = require('dotenv');
+dotenv.config();
+console.log(process.env.MYSQL_BD);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +29,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
+app.use('/clientes', clientesRouter);
+app.use('/produtos', produtosRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -29,6 +41,7 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+  console.error(err);
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
