@@ -20,13 +20,14 @@ router.post('/', nomeMiddleware.validateName,
   sobrenomeMiddleware.validateFamilyName,
   idadeMiddleware.validateAge,
   emailMiddleware.validateEmail,
-  clienteController.save
+  clienteController.save,
+  cacheMiddleware
 ) 
 
 /* PUT clientes: atualiza um cliente */
-router.put('/:id', clienteController.update)
+router.put('/:id', cacheMiddleware, clienteController.update)
 
 /* DELETE clientes: remove um cliente pelo ID */
-router.delete('/:id', clienteController.remove)
+router.delete('/:id', cacheMiddleware, clienteController.remove)
 
 module.exports = router
