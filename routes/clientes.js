@@ -7,12 +7,13 @@ const nomeMiddleware = require('../middlewares/nomeMiddleware')
 const sobrenomeMiddleware = require('../middlewares/sobrenomeMiddleware')
 const idadeMiddleware = require('../middlewares/idadeMiddleware')
 const emailMiddleware = require('../middlewares/emailMiddleware')
+const cacheMiddleware = require('../middlewares/cacheMiddleware')
 
 /* GET clientes: busca todos os clientes */
-router.get('/', clienteController.findAll)
+router.get('/', cacheMiddleware, clienteController.findAll)
 
 /* GET clientes/:id: busca um cliente pelo ID */
-router.get('/:id', clienteController.findOne)
+router.get('/:id', cacheMiddleware, clienteController.findOne)
 
 /* POST clientes: adiciona um novo cliente */
 router.post('/', nomeMiddleware.validateName,
