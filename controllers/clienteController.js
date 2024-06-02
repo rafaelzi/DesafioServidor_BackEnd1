@@ -1,32 +1,53 @@
+const clienteService = require('../services/clienteService');
+const cache = require('../middlewares/cacheMiddleware').cache;
 // findAll()
-const clienteService = require('../services/clienteService')
-const findAll = async (request, response) => {
-  const clientes = await clienteService.findAll()
-  return response.status(200).json(clientes)
-}
+const findAll = async (req, res) => {
+  const chave = req.originalUrl;
+  const dadosCache = cache.get(chave);
+
+  if (dadosCache) {
+    console.log(`Cache hit: ${chave}`);
+    return res.status(200).json(dadosCache);
+  } else {
+    console.log(`Cache miss: ${chave}`);
+    try {
+      const clientes = await clienteService.findAll();
+      cache.set(chave, clientes, 30); // Cache por 30 segundos
+      console.log(`Dados recuperados do banco de dados para a URL: ${chave}`);
+      return res.status(200).json(clientes);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+  }
+};
 
 // findOne()
-const findOne = async (request, response) => {
-  try {
-    // Extrair o ID dos parâmetros da requisição
-    const { id } = request.params
-        
-    // Chamar o serviço para buscar o cliente pelo ID
-    const cliente = await clienteService.findOne(id)
-        
-    // Se o cliente não foi encontrado, retornar um erro 404
-    if (!cliente) {
-      return response.status(404).json({ error: 'Cliente não encontrado' })
+const findOne = async (req, res) => {
+  const { id } = req.params;
+  const chave = req.originalUrl;
+  const dadosCache = cache.get(chave);
+
+  if (dadosCache) {
+    console.log(`Cache hit: ${chave}`);
+    return res.status(200).json(dadosCache);
+  } else {
+    console.log(`Cache miss: ${chave}`);
+    try {
+      const cliente = await clienteService.findOne(id);
+      if (!cliente) {
+        return res.status(404).json({ error: 'Cliente não encontrado' });
+      }
+      cache.set(chave, cliente, 30); // Cache por 30 segundos
+      console.log(`Dados recuperados do banco de dados para a URL: ${chave}`);
+      return res.status(200).json(cliente);
+    } catch (error) {
+      console.error('Erro ao buscar cliente:', error);
+      return res.status(500).json({ error: 'Erro interno do servidor' });
     }
-        
-    // Se o cliente foi encontrado, retornar o cliente
-    return response.status(200).json(cliente)
-  } catch (error) {
-    // Em caso de erro, retornar um erro 500
-    console.error('Erro ao buscar cliente:', error)
-    return response.status(500).json({ error: 'Erro interno do servidor' })
   }
-}
+};
+
 
 // save()
 const save = async (request, response) => {

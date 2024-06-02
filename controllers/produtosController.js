@@ -1,32 +1,51 @@
-// findAll()
-const produtosService = require('../services/produtosService')
-const findAll = async (request, response) => {
-  const produtos = await produtosService.findAll()
-  return response.status(200).json(produtos)
-}
+const produtosService = require('../services/produtosService');
+const cache = require('../middlewares/cacheMiddleware').cache;// findAll()
+const findAll = async (req, res) => {
+  const chave = req.originalUrl;
+  const dadosCache = cache.get(chave);
+
+  if (dadosCache) {
+    console.log(`Cache hit: ${chave}`);
+    return res.status(200).json(dadosCache);
+  } else {
+    console.log(`Cache miss: ${chave}`);
+    try {
+      const produtos = await produtosService.findAll();
+      cache.set(chave, produtos, 30); // Cache por 30 segundos
+      console.log(`Dados recuperados do banco de dados para a URL: ${chave}`);
+      return res.status(200).json(produtos);
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+  }
+};
 
 // findOne()
-const findOne = async (request, response) => {
-  try {
-    // Extrair o ID dos parâmetros da requisição
-    const { id } = request.params
-        
-    // Chamar o serviço para buscar o produtos pelo ID
-    const produtos = await produtosService.findOne(id)
-        
-    // Se o produtos não foi encontrado, retornar um erro 404
-    if (!produtos) {
-      return response.status(404).json({ error: 'produto não encontrado' })
+const findOne = async (req, res) => {
+  const { id } = req.params;
+  const chave = req.originalUrl;
+  const dadosCache = cache.get(chave);
+
+  if (dadosCache) {
+    console.log(`Cache hit: ${chave}`);
+    return res.status(200).json(dadosCache);
+  } else {
+    console.log(`Cache miss: ${chave}`);
+    try {
+      const produto = await produtosService.findOne(id);
+      if (!produto) {
+        return res.status(404).json({ error: 'Produto não encontrado' });
+      }
+      cache.set(chave, produto, 30); // Cache por 30 segundos
+      console.log(`Dados recuperados do banco de dados para a URL: ${chave}`);
+      return res.status(200).json(produto);
+    } catch (error) {
+      console.error('Erro ao buscar produto:', error);
+      return res.status(500).json({ error: 'Erro interno do servidor' });
     }
-        
-    // Se o produtos foi encontrado, retornar o produtos
-    return response.status(200).json(produtos)
-  } catch (error) {
-    // Em caso de erro, retornar um erro 500
-    console.error('Erro ao buscar produtos:', error)
-    return response.status(500).json({ error: 'Erro interno do servidor' })
   }
-}
+};
 
 // save()
 const save = async (request, response) => {
