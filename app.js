@@ -29,12 +29,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var cacheMiddleware = require('./middlewares/cacheMiddleware');
+const authMiddleware = require('./middlewares/authMiddleware');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
-app.use('/clientes', cacheMiddleware, clientesRouter); 
+app.use('/clientes', authMiddleware, cacheMiddleware, clientesRouter); 
 app.use('/produtos', cacheMiddleware, produtosRouter); 
 
 // catch 404 and forward to error handler
